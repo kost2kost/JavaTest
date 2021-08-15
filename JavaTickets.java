@@ -22,7 +22,7 @@ public class JavaTickets {
     	
     		if(args.length == 0) {
     			System.out.println("Usage: java Tickets <namefile>");
-//    			return;
+    			return;
     		}
     			
     	
@@ -34,17 +34,41 @@ public class JavaTickets {
 
         	ArrayList<Ticket> listTickets = new ArrayList<Ticket>();
 
-        	fillArrayListTicket(listTickets, listKeys);
-//       	fillArrayListTicketFile(listTickets, listKeys, args[0]);        	
+//        	fillArrayListTicket(listTickets, listKeys);
+       	fillArrayListTicketFile(listTickets, listKeys, args[0]);        	
 
-        	System.out.println("Среднее время в пути : " + getAvgTimeFromListBigDecimal(listTickets));
+        	System.out.println("Среднее время в пути (в минутах) : " + getAvgTimeFromListBigDecimal(listTickets));
+        	System.out.println("Среднее время в пути (в часах минутах) : " 
+             	+ getAvgTimeFromListBigDecimal(listTickets).intValue() / 60 
+             	+ " часов "
+            	+ getAvgTimeFromListBigDecimal(listTickets).intValue() % 60 
+    			+ " минут "
+        	);
+
         	
         	Collections.sort(listTickets, Ticket.minTimeInWayBigDecimalComparator);
-        	System.out.println("Значение 90-го перцентиля : " + getPercentil(listTickets, new BigDecimal(0.9)));
-        	System.out.println("Значение 30-го перцентиля : " + getPercentil(listTickets, new BigDecimal(0.3)));
-        	System.out.println("Значение 20-го перцентиля : " + getPercentil(listTickets, new BigDecimal(0.2)));        	
-        	System.out.println("Значение 100-го перцентиля : " + getPercentil(listTickets, new BigDecimal(1.0)));        	
+        	System.out.println("Значение 90-го перцентиля (в минутах) : " + getPercentil(listTickets, 0.9));
+        	System.out.println("Значение 30-го перцентиля (в минутах) : " + getPercentil(listTickets, 0.3));
+        	System.out.println("Значение 20-го перцентиля (в минутах) : " + getPercentil(listTickets, 0.2));
+        	System.out.println("Значение 100-го перцентиля (в минутах) : " + getPercentil(listTickets, 1.));
+        	System.out.println("Значение 90-го перцентиля (в часах минутах) : " 
+        			+ getPercentil(listTickets, 0.9).intValue() / 60
+        			+ " часов "
+        			+ getPercentil(listTickets, 0.9).intValue() % 60
+        			+ " минут "
+        			);
+        	System.out.println("Значение 100-го перцентиля (в часах минутах) : " 
+        			+ getPercentil(listTickets, 1.0).intValue() / 60
+        			+ " часов "
+        			+ getPercentil(listTickets, 1.0).intValue() % 60
+        			+ " минут "
+        			);
+        	System.out.println("Значение 90-го перцентиля (в часаx) : " 
+        			+ (new BigDecimal(getPercentil(listTickets, 0.9).divide(new BigDecimal(60.),3,RoundingMode.HALF_EVEN).doubleValue())
+        					.setScale(3, RoundingMode.HALF_EVEN))
+        			);
 
+        	
     }
 
   //public static void fillArrayListTicketFile функция заполняющая массив ArrayList<Ticket> данными из файла <namefile>
@@ -79,10 +103,7 @@ public class JavaTickets {
     	
     }
     
-
-	// public static BigDecimal getPercentil(ArrayList<Ticket>, Percentil) функция получения значения  заданного перцентиля в массиве
-    
-    public static BigDecimal getPercentil(ArrayList<Ticket> listTickets, BigDecimal bdPercentil ) {
+    public static BigDecimal getPercentil(ArrayList<Ticket> listTickets, double dPercentilDouble ) {
     	// BigDecimal bdResult 
     	// BigDecimal bdPart - дробная часть интервала в расчете перцентиля
     	// BigDecimal bdFloor -   целая часть интервала в расчете перцентиля
@@ -97,6 +118,7 @@ public class JavaTickets {
     	    
     	// 20-процентиль для 10 значений 0.2*/(1/9)=0.2*9 = 1.8
     	// Низ 2-го интервала +  0.8 * (разница значений границ 2-го интервала) 13 + 0.8*(13.5-13.0) =13+0.8*0.5= 13.4
+    	BigDecimal bdPercentil = new BigDecimal(dPercentilDouble).setScale(3, RoundingMode.HALF_EVEN);
     	
     	
     	BigDecimal bdResult = new BigDecimal(-1.).setScale(3, RoundingMode.HALF_EVEN);
@@ -128,7 +150,7 @@ public class JavaTickets {
     	return bdResult.setScale(2, RoundingMode.HALF_EVEN);
     	
     }
-
+    
 //public static BigDecimal getAvgTimeFromListBigDecimal(ArrayList<Ticket>) функция получения среднего значения времени в пути из массива
     
     
